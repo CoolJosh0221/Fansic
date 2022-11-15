@@ -1,7 +1,7 @@
 aiohttp>=3.6.0,<3.9.0
 async-timeout
 python-dotenv
-https://github.com/Pycord-Development/pycord.zip
+git+https://github.com/Pycord-Development/pycord.git
 better_profanity
 yarl
 motor
