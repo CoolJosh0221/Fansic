@@ -228,7 +228,7 @@ async def info(ctx):
 
     embed = discord.Embed(
         title="Info",
-        description="The bot is made by <@!847772018928779285> \nJoin our discord server: https://discord.gg/QwXXNGNkeh",
+        description="The bot is made by <@!847772018928779285> \nJoin our discord server: https://discord.gg/QwXXNGNkeh \nJoin the bot's support server: https://discord.gg/x5mjHNQRz8",
         color=0xFF8800,
     )
     embed.set_footer(
@@ -343,7 +343,7 @@ async def gstart(
     description="Make a suggestion for the bot.",
 )
 async def suggest(ctx, suggestion: Option(str, required=True)):
-    channel = bot.get_channel(996944121073782914)
+    channel = bot.get_channel(1043865419808780439)
     embed = discord.Embed(
         title=f"Suggestion by {ctx.author.name}#{ctx.author.discriminator}:",
         description=f"{ctx.author.mention}: {suggestion}",
@@ -352,7 +352,7 @@ async def suggest(ctx, suggestion: Option(str, required=True)):
     embed.set_footer(text=ctx.guild, icon_url=ctx.guild.icon)
     msg = await channel.send(embed=embed)
     await ctx.respond(
-        "We've posted your suggestion in our support server!", ephemeral=True
+        "We've posted your suggestion in our support server.", ephemeral=True
     )
     await msg.add_reaction("👍")
     await msg.add_reaction("👎")
