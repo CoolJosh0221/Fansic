@@ -1,4 +1,4 @@
-FROM fnndsc:python-poetry
+FROM fnndsc/python-poetry:latest
 WORKDIR /bot
 RUN apt-get update \
 && apt-get install -y --no-install-recommends git \
