@@ -1,6 +1,7 @@
 import motor.motor_asyncio
 from customized_functions.handle_error import handle_error
 import asyncio
+import contextlib
 import os
 import random
 import logging
@@ -17,26 +18,28 @@ from discord.ui import Button, InputText, Modal, View
 import sys
 
 import logging.handlers
+
 load_dotenv()  # load the dotenv module to prevent tokens from being seen by others
 
 
-logger = logging.getLogger('discord')
+logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
-logging.getLogger('discord.http').setLevel(logging.INFO)
+logging.getLogger("discord.http").setLevel(logging.INFO)
 
 handler = logging.handlers.RotatingFileHandler(
-    filename='discord.log',
-    encoding='utf-8',
+    filename="discord.log",
+    encoding="utf-8",
     maxBytes=32 * 1024 * 1024,  # 32 MiB
     backupCount=5,  # Rotate through 5 files
 )
-dt_fmt = '%Y-%m-%d %H:%M:%S'
+dt_fmt = "%Y-%m-%d %H:%M:%S"
 formatter = logging.Formatter(
-    '[{asctime}] [{levelname:<8}] {name}: {message}', dt_fmt, style='{')
+    "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style="{"
+)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-profanity.load_censor_words(whitelist_words=['god'])
+profanity.load_censor_words(whitelist_words=["god"])
 
 
 intents = discord.Intents.all()
@@ -45,7 +48,9 @@ intents.message_content = True
 
 bot = discord.Bot(intents=intents)
 bot.cluster = motor.motor_asyncio.AsyncIOMotorClient(
-    f"mongodb+srv://josh:{str(os.getenv('mongo_pwd'))}@fansic.dwvvufz.mongodb.net/?retryWrites=true&w=majority&authSource=admin", serverSelectionTimeoutMS=5000)
+    f"mongodb+srv://josh:{str(os.getenv('mongo_pwd'))}@fansic.dwvvufz.mongodb.net/?retryWrites=true&w=majority&authSource=admin",
+    serverSelectionTimeoutMS=5000,
+)
 print(bot.cluster.info)
 
 
@@ -56,14 +61,12 @@ async def on_ready():
     print("================================================================\n\n")
 
     while True:
-        try:
-            await bot.get_channel(1018080842507108362).send(file=discord.File("discord.log"), content="\n")
-            f = open('discord.log', 'r+')
-            f.truncate(0)
-            f.close()
-        except discord.errors.HTTPException:
-            pass
-
+        with contextlib.suppress(discord.errors.HTTPException):
+            await bot.get_channel(1018080842507108362).send(
+                file=discord.File("discord.log"), content="\n"
+            )
+            with open("discord.log", "r+") as f:
+                f.truncate(0)
         await bot.change_presence(
             status=discord.Status.streaming,
             activity=discord.Streaming(
@@ -130,11 +133,7 @@ async def check(ctx):
 
 @bot.slash_command(name="whois", description="Get information from a specified user.")
 async def whois(ctx, user: Option(discord.Member, default=None, required=False)):
-    if user == None:
-        fetch_user = ctx.author
-    else:
-        fetch_user = user
-
+    fetch_user = ctx.author if user is None else user
     embed = discord.Embed(
         title=f"{fetch_user.name}#{fetch_user.discriminator}",
         description=fetch_user.mention,
@@ -191,7 +190,7 @@ async def announce(
     )
     embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon)
     sending = await ctx.respond("Sending...", ephemeral=True)
-    if text == None:
+    if text is None:
         await annchannel.send(embed=embed)
     else:
         await annchannel.send(f"{text}", embed=embed)
@@ -294,8 +293,7 @@ async def gstart(
         description=f"React with <a:tada2:987204661838753792> to enter!\nEnds in: <t:{end_time}:R>\nHosted by {ctx.author.mention}",
         color=discord.Color.orange(),
     )
-    embed.set_author(name="GIVEAWAY TIME!",
-                     icon_url="https://i.imgur.com/DDric14.png")
+    embed.set_author(name="GIVEAWAY TIME!", icon_url="https://i.imgur.com/DDric14.png")
     giveaway_msg = await gchannel.send(
         "<a:tada3:987204676292313108> **GIVEAWAY STARTED** <a:tada3:987204676292313108>",
         embed=embed,
@@ -306,8 +304,7 @@ async def gstart(
     new_message = await gchannel.fetch_message(giveaway_msg.id)
     users = await new_message.reactions[0].users().flatten()
     users.pop(users.index(bot.user))
-    entrants = discord.Embed(
-        title=None, description=f"**{len(users)}** entrants ↗")
+    entrants = discord.Embed(title=None, description=f"**{len(users)}** entrants ↗")
 
     if users == []:
         await gchannel.send(
@@ -322,8 +319,7 @@ async def gstart(
         color=discord.Color.orange(),
     )
 
-    embed.set_author(name="GIVEAWAY TIME!",
-                     icon_url="https://i.imgur.com/DDric14.png")
+    embed.set_author(name="GIVEAWAY TIME!", icon_url="https://i.imgur.com/DDric14.png")
     await giveaway_msg.edit(
         "<a:tada3:987204676292313108> **GIVEAWAY ENDED** <a:tada3:987204676292313108>",
         embed=embed,
@@ -385,9 +381,10 @@ async def invite(ctx):
         "[Click here to invite the bot to your server](https://discord.com/api/oauth2/authorize?client_id=918477034232119306&permissions=8&scope=bot%20applications.commands) "
     )
 
+
 for file in os.listdir("cogs"):
     if file.endswith(".py"):
-        bot.load_extension("cogs." + file[:-3])
+        bot.load_extension(f"cogs.{file[:-3]}")
 
 
 token = str(os.getenv("TOKEN"))
