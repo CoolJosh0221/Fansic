@@ -1,43 +1,21 @@
-import motor.motor_asyncio
-from customized_functions.handle_error import handle_error
 import asyncio
-import contextlib
 import os
 import random
-import logging
 from datetime import datetime, timedelta
 
-from better_profanity import profanity
-from dotenv import load_dotenv
-
 import discord
+import motor.motor_asyncio
+from better_profanity import profanity
 from discord import Option
 from discord.ext import commands
 from discord.ext.commands import MissingPermissions
 from discord.ui import Button, InputText, Modal, View
-import sys
+from dotenv import load_dotenv
 
-import logging.handlers
+from customized_functions.handle_error import handle_error
 
 load_dotenv()  # load the dotenv module to prevent tokens from being seen by others
 
-
-logger = logging.getLogger("discord")
-logger.setLevel(logging.DEBUG)
-logging.getLogger("discord.http").setLevel(logging.INFO)
-
-handler = logging.handlers.RotatingFileHandler(
-    filename="discord.log",
-    encoding="utf-8",
-    maxBytes=32 * 1024 * 1024,  # 32 MiB
-    backupCount=5,  # Rotate through 5 files
-)
-dt_fmt = "%Y-%m-%d %H:%M:%S"
-formatter = logging.Formatter(
-    "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style="{"
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 profanity.load_censor_words(whitelist_words=["god"])
 
@@ -61,12 +39,6 @@ async def on_ready():
     print("================================================================\n\n")
 
     while True:
-        with contextlib.suppress(discord.errors.HTTPException):
-            await bot.get_channel(1018080842507108362).send(
-                file=discord.File("discord.log"), content="\n"
-            )
-            with open("discord.log", "r+") as f:
-                f.truncate(0)
         await bot.change_presence(
             status=discord.Status.streaming,
             activity=discord.Streaming(
@@ -284,6 +256,7 @@ async def gstart(
     ctx,
     gchannel: Option(discord.TextChannel, required=True),
     prize: Option(str, required=True),
+    # trunk-ignore(flake8/F821)
     time: Option(int, "Time (seconds)", required=True),
 ):
     await ctx.respond("Giveaway created.", ephemeral=True)
