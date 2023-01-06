@@ -24,6 +24,6 @@ jobs:
         # Image
         image: fansic
         # Options
-        options: # optional
+        options: -e TOKEN=${{secrets.TOKEN}} -e mongo_pwd=${{secrets.MONGO_PWD}}
         # Use a specific shell
         shell: bash
