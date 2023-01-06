@@ -17,3 +17,4 @@ jobs:
       run: docker build --tag fansic .
     - name: Run the docker image
       run: docker run -e TOKEN=${{secrets.TOKEN}} -e mongo_pwd=${{secrets.MONGO_PWD}} fansic
+      
