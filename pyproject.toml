@@ -11,12 +11,12 @@ python = "3.10.9"
 aiohttp = "^3.8.3"
 async-timeout = "^4.0.2"
 python-dotenv = "^0.21.0"
-py-cord = { git = "https://github.com/Pycord-Development/pycord.git" }
 better-profanity = "^0.7.0"
 yarl = "^1.8.2"
 motor = "^3.1.1"
 pymongo = { extras = ["srv"], version = "^4.3.3" }
 black = "^22.12.0"
+py-cord = {extras = ["speed"], version = "^2.3.2"}
 
 
 [tool.poetry.group.dev.dependencies]
