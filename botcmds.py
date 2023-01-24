@@ -36,7 +36,7 @@ print(bot.cluster.info)
 async def on_ready():
     print(f"We have logged in as {bot.user}.")
     print("Bot is now ready!")
-    print("================================================================\n\n")
+    print("===============================================================\n\n")
 
     while True:
         await bot.change_presence(
